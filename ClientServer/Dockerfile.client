@@ -1,0 +1,11 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /app
+COPY Program.cs .
+COPY ClientApp.csproj .
+#COPY . .
+
+RUN dotnet build ClientApp.csproj -c Release
+
+#run the client
+CMD [ "dotnet", "run", "--project", "ClientApp.csproj" ]

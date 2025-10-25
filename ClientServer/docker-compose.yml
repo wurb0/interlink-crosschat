@@ -1,0 +1,67 @@
+# STEPS:
+# docker-compose build
+# docker-compose up server
+# docker-compose run client 
+
+
+# we use up for server because its a long running container, you can only see logs but cant interact with it.
+#we use run for a client because its a temporary container and it lets use tty it
+
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server #there will only be one server so i can give it a name ,, cant do ths for client
+    ports:
+      - "8000:8000" #host port 8000 maps to container port 8000
+    networks: # part of the chatnet network
+      - chatnet
+    stdin_open: true
+    tty: true
+
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    #container_name: name
+    networks:
+      - chatnet
+    depends_on:
+      - server
+      - rust-server
+    stdin_open: true
+    tty: true
+
+  rust-server:
+    build:
+      context: ./rustServer
+    container_name: rust-server
+    ports:
+    - "8001:8000"
+    networks: # part of the chatnet network
+      - chatnet
+    stdin_open: true
+    tty: true
+
+  rust-client:
+    build:
+      context: ./rustClient
+    depends_on:
+      - server
+      - rust-server
+    networks:
+      - chatnet
+    stdin_open: true
+    tty: true
+    
+
+
+networks:
+  chatnet:
+    driver: bridge # within the chatnet network, srevices can talk to each other using their container names instead of ip's
+    # im just naming it myself, this is done anyways by docker
+
+

@@ -1,0 +1,17 @@
+# get base image
+FROM amazoncorretto:21
+
+#create root dir
+WORKDIR /app
+
+#copy local server file to /app
+COPY server.java .
+
+#compile server.java
+RUN javac server.java
+
+#expise port that serverjava uses
+EXPOSE 8000
+
+#run this command to run server.java
+CMD [ "java", "server" ]
