@@ -1,0 +1,19 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: pyserver
+    ports:
+      - "50051:50051" 
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: pyclient
+    stdin_open: true
+    tty: true
+    depends_on:
+      - server
+

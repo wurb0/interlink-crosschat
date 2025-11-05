@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package chat;
+
+// create structs here
+
+// a msg
+message Message {
+    string roomName =1;
+    string username = 2;
+    string msg =3;
+
+}
+
+// req to create a room
+message CreateRoomReq{
+    string roomName = 1;
+}
+
+message CreateRoomRes{
+    string success = 1;
+    string error =2;
+
+}
+
+message ListRoomsReq{}
+message ListRoomsRes{
+    repeated string rooms = 1;
+}
+
+message JoinRoomReq{
+    string roomName= 1;
+    string username = 2;
+}
+
+message StreamMsg{
+    Message msg = 1;
+}
+
+message SendMsgReq{
+    string roomName =1;
+    string username =2;
+    string msg = 3;
+}
+
+// Chat service with your Java function names
+service ChatService {
+  rpc createRoom(CreateRoomReq) returns (CreateRoomRes);
+  rpc listRooms(ListRoomsReq) returns (ListRoomsRes);
+  rpc joinRoom(JoinRoomReq) returns (stream StreamMsg);
+  rpc sendMsg(SendMsgReq) returns (CreateRoomRes);
+}
+
+
+

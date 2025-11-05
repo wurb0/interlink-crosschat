@@ -1,0 +1,13 @@
+FROM amazoncorretto:21
+
+WORKDIR /app
+COPY server.java .
+COPY clientInterface.java .
+COPY serverInterface.java . 
+
+RUN javac *.java
+
+
+EXPOSE 8101
+
+CMD ["java","-Djava.rmi.server.hostname=server", "server"]

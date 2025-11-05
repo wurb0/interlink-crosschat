@@ -1,0 +1,28 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile.server
+    container_name: server
+    ports:
+      - "8101:8101"
+    networks:
+      - chat
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: client
+    stdin_open : true
+    tty: true
+    networks:
+      - chat
+    environment:
+      - RMI_HOST=server
+    depends_on:
+      - server
+
+networks:
+  chat:
+    driver: bridge
