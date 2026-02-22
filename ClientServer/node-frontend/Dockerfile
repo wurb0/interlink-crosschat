@@ -8,7 +8,7 @@ FROM node:22-bookworm-slim
 WORKDIR /app/ClientServer
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
-  openjdk-21-jdk \
+  default-jdk \
   python3 \
   python3-pip \
   ca-certificates \
