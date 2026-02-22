@@ -25,8 +25,7 @@ const CHAT_BACKENDS = parseBackendTargets(
   process.env.CHAT_BACKENDS ||
     `java:tcp:${CHAT_TCP_HOST}:${CHAT_TCP_PORT},rust:tcp:${CHAT_TCP_HOST}:8001,javarmi:tcp:${CHAT_TCP_HOST}:8201,grpc:grpc:${CHAT_TCP_HOST}:50051`
 );
-const POSTGRES_CONNECTION_STRING =
-  process.env.POSTGRES_CONNECTION_STRING || "postgres://postgres:postgres@localhost:5432/chatapp";
+const POSTGRES_CONNECTION_STRING = pickPgConnectionString();
 const JWT_SECRET = process.env.JWT_SECRET || "replace-this-with-a-long-random-secret-for-production";
 const JWT_ISSUER = process.env.JWT_ISSUER || "nimbus-chat";
 const JWT_AUDIENCE = process.env.JWT_AUDIENCE || "nimbus-chat-client";
@@ -698,9 +697,11 @@ async function ensureSchema() {
 }
 
 function createPgConfig(raw) {
-  const value = String(raw || "").trim();
+  const value = sanitizeConnString(raw);
   if (!value) {
-    return { connectionString: "postgres://postgres:postgres@localhost:5432/chatapp" };
+    throw new Error(
+      "Postgres connection string is missing. Set POSTGRES_CONNECTION_STRING or DATABASE_URL."
+    );
   }
 
   if (value.startsWith("postgres://") || value.startsWith("postgresql://")) {
@@ -725,6 +726,36 @@ function createPgConfig(raw) {
     user: map.username || map.user || "postgres",
     password: map.password || ""
   };
+}
+
+function pickPgConnectionString() {
+  const direct = sanitizeConnString(process.env.POSTGRES_CONNECTION_STRING);
+  if (direct) {
+    return direct;
+  }
+
+  const renderDbUrl = sanitizeConnString(process.env.DATABASE_URL);
+  if (renderDbUrl) {
+    return renderDbUrl;
+  }
+
+  return "";
+}
+
+function sanitizeConnString(raw) {
+  let value = String(raw || "").trim();
+  if (!value) {
+    return "";
+  }
+
+  if (
+    (value.startsWith("\"") && value.endsWith("\"")) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
+    value = value.slice(1, -1).trim();
+  }
+
+  return value;
 }
 
 function describePgTarget(raw) {
