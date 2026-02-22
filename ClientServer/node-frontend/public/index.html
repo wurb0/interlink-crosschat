@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Interlink Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Fraunces:opsz,wght@9..144,500;9..144,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="bg-shape shape-a"></div>
+  <div class="bg-shape shape-b"></div>
+  <button id="theme-toggle" class="theme-switch" type="button" aria-label="Toggle color theme" aria-pressed="false">
+    <span class="switch-track">
+      <span class="switch-thumb"></span>
+    </span>
+    <span class="switch-label">Dark</span>
+  </button>
+
+  <main class="app-shell">
+    <section id="auth-view" class="auth-card visible">
+      <h1>Interlink Chat</h1>
+      <p class="sub">Sign in or create your account to enter the chat system.</p>
+
+      <div class="tabs" role="tablist" aria-label="Auth mode">
+        <button id="tab-login" class="tab active" type="button">Login</button>
+        <button id="tab-signup" class="tab" type="button">Sign Up</button>
+      </div>
+
+      <form id="auth-form" class="auth-form">
+        <label for="auth-username">Username</label>
+        <input id="auth-username" type="text" autocomplete="username" minlength="3" maxlength="24" required />
+
+        <label for="auth-password">Password</label>
+        <input id="auth-password" type="password" autocomplete="current-password" minlength="8" required />
+
+        <button id="auth-submit" class="primary" type="submit">Login</button>
+      </form>
+
+      <p id="auth-message" class="auth-message"></p>
+    </section>
+
+    <section id="chat-view" class="chat-layout hidden">
+      <header class="chat-header panel">
+        <div>
+          <p class="eyebrow">Authenticated Session</p>
+          <h2>Interoperable Chat Console</h2>
+          <p class="sub">Signed in as <strong id="active-username"></strong></p>
+          <p class="sub">Backend: <strong id="active-backend">-</strong></p>
+        </div>
+        <div class="header-actions">
+          <div class="status-row">
+            <span id="status-dot" class="dot offline"></span>
+            <span id="status-text">Disconnected</span>
+          </div>
+          <button id="logout-btn" class="ghost" type="button">Logout</button>
+        </div>
+      </header>
+
+      <section class="panel room-controls">
+        <label for="backend-select">Language Backend</label>
+        <div class="row">
+          <select id="backend-select"></select>
+          <button id="switch-backend-btn" type="button">Switch Backend</button>
+        </div>
+        <label for="room-name">Room Name</label>
+        <div class="row">
+          <input id="room-name" type="text" placeholder="general" />
+          <button id="create-room-btn" type="button">Create</button>
+          <button id="join-room-btn" type="button">Join</button>
+          <button id="list-rooms-btn" type="button">Refresh</button>
+        </div>
+        <p class="meta">Current room: <strong id="current-room">None</strong></p>
+        <ul id="rooms-list" class="rooms-list"></ul>
+      </section>
+
+      <div class="content-grid">
+        <section class="panel chat-panel">
+          <div id="chat-log" class="chat-log"></div>
+          <div class="row">
+            <input id="msg-input" type="text" placeholder="Write a message..." />
+            <button id="send-btn" type="button">Send</button>
+          </div>
+        </section>
+
+        <section class="panel trace-panel">
+          <div class="row">
+            <label for="interop-log" class="terminal-title">Interoperability Trace</label>
+            <button id="clear-trace-btn" class="ghost" type="button">Clear Trace</button>
+          </div>
+          <pre id="interop-log" class="interop-log"></pre>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="/app.js"></script>
+</body>
+</html>

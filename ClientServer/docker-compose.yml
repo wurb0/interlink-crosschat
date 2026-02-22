@@ -1,37 +1,13 @@
-# STEPS:
-# docker-compose build
-# docker-compose up server
-# docker-compose run client 
-
-
-# we use up for server because its a long running container, you can only see logs but cant interact with it.
-#we use run for a client because its a temporary container and it lets use tty it
-
-
 services:
   server:
     build:
       context: .
       dockerfile: Dockerfile.server
-    container_name: server #there will only be one server so i can give it a name ,, cant do ths for client
+    container_name: server
     ports:
-      - "8000:8000" #host port 8000 maps to container port 8000
-    networks: # part of the chatnet network
-      - chatnet
-    stdin_open: true
-    tty: true
-
-
-  client:
-    build:
-      context: .
-      dockerfile: Dockerfile.client
-    #container_name: name
+      - "8000:8000"
     networks:
       - chatnet
-    depends_on:
-      - server
-      - rust-server
     stdin_open: true
     tty: true
 
@@ -40,9 +16,57 @@ services:
       context: ./rustServer
     container_name: rust-server
     ports:
-    - "8001:8000"
-    networks: # part of the chatnet network
+      - "8001:8000"
+    networks:
       - chatnet
+    stdin_open: true
+    tty: true
+
+  javarmi-server:
+    build:
+      context: ./JavaRMI
+      dockerfile: Dockerfile.server
+    container_name: javarmi-server
+    ports:
+      - "8101:8101"
+    networks:
+      - chatnet
+
+  rmi-bridge:
+    build:
+      context: ./JavaRMI
+      dockerfile: Dockerfile.bridge
+    container_name: rmi-bridge
+    environment:
+      - RMI_HOST=javarmi-server
+      - RMI_PORT=8101
+      - BRIDGE_PORT=8201
+    ports:
+      - "8201:8201"
+    depends_on:
+      - javarmi-server
+    networks:
+      - chatnet
+
+  grpc-server:
+    build:
+      context: ./pythonGRPC
+      dockerfile: Dockerfile.server
+    container_name: grpc-server
+    ports:
+      - "50051:50051"
+    networks:
+      - chatnet
+
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    networks:
+      - chatnet
+    depends_on:
+      - server
+      - rust-server
     stdin_open: true
     tty: true
 
@@ -56,12 +80,7 @@ services:
       - chatnet
     stdin_open: true
     tty: true
-    
-
 
 networks:
   chatnet:
-    driver: bridge # within the chatnet network, srevices can talk to each other using their container names instead of ip's
-    # im just naming it myself, this is done anyways by docker
-
-
+    driver: bridge
