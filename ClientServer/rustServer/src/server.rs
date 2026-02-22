@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize}; // derive JSON serialization/deserialization
 use serde_json::json;                // macro to build JSON values easily
-use std::collections::HashMap;       use std::env::consts::DLL_PREFIX;
+use std::collections::HashMap;
+use std::env;
 use std::sync::Arc;                  // atomically reference counted pointer for sharing across tasks
 use tokio::io::{AsyncBufReadExt, AsyncWriteExt, BufReader}; // async I/O helpers
 use tokio::net::{TcpListener, TcpStream};                  // async TCP
@@ -21,8 +22,12 @@ struct Room{
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>>{
-    let listener = TcpListener::bind("0.0.0.0:8000").await?;
-    println!("Rust server listening on 127:8000");
+    let port = env::var("RUST_SERVER_PORT")
+        .ok()
+        .and_then(|p| p.parse::<u16>().ok())
+        .unwrap_or(8000);
+    let listener = TcpListener::bind(format!("0.0.0.0:{port}")).await?;
+    println!("Rust server listening on 127:{port}");
 
     let rooms: Arc<Mutex<HashMap<String,Room>>> = Arc::new(Mutex::new(HashMap::new()));
 
@@ -220,5 +225,4 @@ async fn handle_client( socket:  TcpStream, rooms: Arc<Mutex<HashMap<String,Room
 
 
 }
-
 
