@@ -19,7 +19,7 @@ The project combines:
    - gRPC (Python server)
 4. Durable state (accounts, token revocation, message history) is persisted in PostgreSQL, independent of in-memory backend room state.
 
-## 60-Second Scan (Hiring Engineer)
+## Summary
 
 Why this is not a regular chat app:
 - One web client switches between **four backend implementations** (`java`, `rust`, `javarmi`, `grpc`) at runtime with no UI contract change.
